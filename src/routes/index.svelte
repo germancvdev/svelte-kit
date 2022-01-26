@@ -1,11 +1,15 @@
 <script lang="ts">
 	import Debugger from 'svelte-debugger';
-
+	import { search } from '../stores/index';
 	let list: Giphy[] = [];
-	let search = 'goku';
+	let _search = 'goku';
+
+	search.subscribe((value) => {
+		_search = value;
+	});
 	function getItems() {
 		fetch(
-			`https://api.giphy.com/v1/gifs/search?api_key=0yI0K3PIwzAuwht9P4sGclUJ7UTSwxLv&q=${search}&limit=25&offset=0&rating=g&lang=en`
+			`https://api.giphy.com/v1/gifs/search?api_key=0yI0K3PIwzAuwht9P4sGclUJ7UTSwxLv&q=${_search}&limit=25&offset=0&rating=g&lang=en`
 		)
 			.then((x) => x.json())
 			.then((x) => {
@@ -19,7 +23,9 @@
 
 	getItems();
 
-	$: if (search) {
+	$: if (_search) {
+		search.update((n) => _search);
+
 		getItems();
 	}
 
@@ -40,7 +46,7 @@
 <h1 class="text-purple-700 text-2xl font-medium">Welcome to SvelteKit</h1>
 <input
 	type="text"
-	bind:value={search}
+	bind:value={_search}
 	class="bg-gray-200 rounded-md py-1 px-2 focus:bg-gray-300 focus:outline-0 my-2 w-3/12 placeholder:text-gray-500"
 	placeholder="Search"
 />
